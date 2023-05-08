@@ -47,13 +47,15 @@ def load_conllu_dataset(datafile, join, name, grams, lemma_split, modus, stemmin
             for s in strings:
                 if (s[0] != "#" and s.strip()):
                     split_string = s.split('\t')
+                    form = split_string[1].replace("(", "").replace(")", "").lower()
+                    lemma = split_string[2].lower()
                     try:
-                        out_dictionary.write(split_string[1] + ' ' + split_string[2] + '\n')
-                        for gram in word_n_grams_split(split_string[1], split_string[3], split_string[2], join, grams, lemma_split, stemming):                            
+                        out_dictionary.write(form + ' ' + lemma + '\n')
+                        for gram in word_n_grams_split(form, split_string[3], lemma, join, grams, lemma_split, stemming):                            
                             if (join == 1):
-                                dataset.loc[counter] = [word_counter, split_string[1] + split_string[3], gram[0], split_string[3], gram[1]]
+                                dataset.loc[counter] = [word_counter, form + split_string[3], gram[0], split_string[3], gram[1]]
                             else:
-                                dataset.loc[counter] = [word_counter, split_string[1], gram[0], split_string[3], gram[1]]
+                                dataset.loc[counter] = [word_counter, form, gram[0], split_string[3], gram[1]]
                             counter = counter + 1
                         word_counter = word_counter + 1
                     except Exception:
@@ -62,6 +64,8 @@ def load_conllu_dataset(datafile, join, name, grams, lemma_split, modus, stemmin
         for s in strings:
             if (s[0] != "#" and s.strip()):
                 split_string = s.split('\t')
-                dataset.loc[counter] = [counter, split_string[1], split_string[1], split_string[3], split_string[2]]
+                form = split_string[1].replace("(", "").replace(")", "").lower()
+                lemma = split_string[2].lower()
+                dataset.loc[counter] = [counter, form, form, split_string[3], lemma]
                 counter = counter + 1
     return dataset
